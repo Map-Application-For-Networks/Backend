@@ -50,10 +50,11 @@ const MarkerSchema = mongoose.Schema(
     },
 
     verified: {
-      type: Boolean,
-      default: false,  // Always default to false
+      type: Number,
+      default: 0,  // Default to 0 (unverified)
+      enum: [0, 1],  // Only allow 0 or 1 as valid values
       set: function(value) {
-        return false;   // Prevent users from setting this to true
+        return value === 1 ? 1 : 0;  // Ensure only 0 or 1 is used
       }
     }
   },

@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('./config/db'); // Import DB connection
-const markerRoutes = require('./routes/addMarkerRoutes'); // Import routes
+const markerRoutes = require('./routes/markerRoutes'); // Import routes
 
 const app = express();
 const PORT = 3001;
