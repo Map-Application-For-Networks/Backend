@@ -1,4 +1,5 @@
 const Role = require('../models/role.model'); // Import Role model
+const Tag = require('../models/tag.model');  // Import Tag model
 const validator = require('validator');
 
 const validateMarker = async (data) => {
@@ -30,9 +31,21 @@ const validateMarker = async (data) => {
     }
 
     // Check if the role exists in the Role collection
-    const roleExists = await Role.findOne({ roleName: role });
-    if (!roleExists) {
-        return 'The specified role does not exist in the database.';
+    if (researchFieldTopic && Array.isArray(researchFieldTopic)) {
+        // Check for duplicate tags
+        const uniqueTags = new Set(researchFieldTopic);
+        if (uniqueTags.size !== researchFieldTopic.length) {
+            return 'Duplicate tags are not allowed.';
+        }
+
+        for (const tag of researchFieldTopic) {
+            const tagExists = await Tag.findOne({ tagName: tag });
+            if (!tagExists) {
+                return `Tag "${tag}" does not exist in the database.`;
+            }
+        }
+    } else {
+        return 'Tags must be an array.';
     }
 
     return null;
