@@ -25,7 +25,7 @@ const addMarkers = async (req, res) => {
 // Add marker controller
 const addMarker = async (req, res) => {
     try {
-        const validationError = validateMarker(req.body);
+        const validationError = await validateMarker(req.body);
         if (validationError) {
             return res.status(400).json({ message: validationError });
         }
