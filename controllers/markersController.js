@@ -41,7 +41,7 @@ const addMarker = async (req, res) => {
 // Get all verified markers controller
 const getVerifiedMarkers = async (req, res) => {
     try {
-        const verifiedMarkers = await Marker.find({ verified: 1 });
+        const verifiedMarkers = await Marker.find({ verified: 0 });
 
         if (verifiedMarkers.length === 0) {
             return res.status(404).json({ message: 'No verified markers found' });

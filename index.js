@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); // Import CORS middleware
 const mongoose = require('./config/db'); // Import DB connection
 const markerRoutes = require('./routes/markerRoutes'); // Import routes
 const tagRoutes = require('./routes/tagRoutes');
@@ -6,6 +7,12 @@ const roleRoutes = require('./routes/roleRoutes');
 
 const app = express();
 const PORT = 3001;
+
+// Enable CORS for all requests (can restrict it to specific origins if needed)
+app.use(cors());
+
+// To restrict CORS to specific origin (like your React app):
+// app.use(cors({ origin: 'http://localhost:3000' }));
 
 app.use(express.json());
 
