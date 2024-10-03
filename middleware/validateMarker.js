@@ -1,6 +1,7 @@
 const Role = require('../models/role.model'); // Import Role model
 const Tag = require('../models/tag.model');  // Import Tag model
 const validator = require('validator');
+const mongoose = require('mongoose');
 
 const validateMarker = async (data) => {
     const { geocode, researchFieldTopic, phone, email, date, verified, role } = data;
@@ -30,26 +31,33 @@ const validateMarker = async (data) => {
         return "You cannot manually set the verification of the marker. It will be set automatically.";
     }
 
-    // Check if the role exists in the Role collection
-    if (researchFieldTopic && Array.isArray(researchFieldTopic)) {
-        // Check for duplicate tags
-        const uniqueTags = new Set(researchFieldTopic);
-        if (uniqueTags.size !== researchFieldTopic.length) {
-            return 'Duplicate tags are not allowed.';
-        }
-
-        for (const tag of researchFieldTopic) {
-            const tagExists = await Tag.findOne({ tagName: tag });
-            if (!tagExists) {
-                return `Tag "${tag}" does not exist in the database.`;
-            }
-        }
-    } else {
+    if (!Array.isArray(researchFieldTopic)) {
         return 'Tags must be an array.';
-    }
-
-    return null;
-};
+      }
+    
+      // Check for duplicate tags
+      const uniqueTags = new Set(researchFieldTopic);
+      if (uniqueTags.size !== researchFieldTopic.length) {
+        return 'Duplicate tags are not allowed.';
+      }
+    
+      // Validate each tag
+      for (const tag of researchFieldTopic) {
+        // Step 1: Check if the tag is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+        }
+    
+        // Step 2: Check if the tag exists in the database
+        const tagExists = await Tag.findOne({ _id: tag });
+        if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+        }
+      }
+    
+      // No errors, return null
+      return null;
+    };
 
 module.exports = { validateMarker };
 

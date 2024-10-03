@@ -46,7 +46,7 @@ const MarkerSchema = mongoose.Schema(
     role: {
       type: String,
       required: [true, "Please specify the role!"],
-      enum: ["Sponsor Company", "Research Facility", "Laboratory"]
+      
     },
 
     verified: {
