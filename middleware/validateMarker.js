@@ -23,6 +23,16 @@ const validateMarker = async (data) => {
         return 'ResearchFieldTopic must be a non-empty array.';
     }
 
+    for (const tag of researchFieldTopic) {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+      }
+      const tagExists = await Tag.findOne({ _id: tag });
+      if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+      }
+  }
+
     if (date) {
         return "You cannot manually set the date. It will be set automatically.";
     }
@@ -30,29 +40,14 @@ const validateMarker = async (data) => {
     if (verified) {
         return "You cannot manually set the verification of the marker. It will be set automatically.";
     }
+    
 
-    if (!Array.isArray(researchFieldTopic)) {
-        return 'Tags must be an array.';
-      }
-    
-      // Check for duplicate tags
-      const uniqueTags = new Set(researchFieldTopic);
-      if (uniqueTags.size !== researchFieldTopic.length) {
-        return 'Duplicate tags are not allowed.';
-      }
-    
-      // Validate each tag
-      for (const tag of researchFieldTopic) {
-        // Step 1: Check if the tag is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-        }
-    
-        // Step 2: Check if the tag exists in the database
-        const tagExists = await Tag.findOne({ _id: tag });
-        if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-        }
+    if (!mongoose.Types.ObjectId.isValid(role) ) {
+      return `Role id "${role}" is not a valid ObjectId.`;
+    }
+      const roleExists = await Role.findOne({ _id: role });
+      if (!roleExists) {
+          return `Role id "${role}" does not exist in the database.`;
       }
     
       // No errors, return null

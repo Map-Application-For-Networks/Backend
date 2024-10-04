@@ -1,25 +1,28 @@
 const Tag = require('../models/tag.model');
 
-// Add tag controller
 const addTag = async (req, res) => {
     try {
-        const { tagName, verified } = req.body;
+        const { tagName } = req.body;
 
-        // Ensure tagName is a string
         if (typeof tagName !== 'string' || !tagName.trim()) {
             return res.status(400).json({ message: "Invalid tag name. It must be a non-empty string." });
         }
 
-        // Create the tag without manual verified field modification
-        const tag = await Tag.create({ tagName });
+        // Check for existing tag with the same name, case-insensitive
+        const existingTag = await Tag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+        if (existingTag) {
+            return res.status(409).json({ message: "A tag with this name already exists." });
+        }
 
-        res.status(200).json(tag);
+        // Create the tag if it does not exist
+        const tag = await Tag.create({ tagName });
+        res.status(201).json(tag);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Add multiple tags controller
+
 const addTags = async (req, res) => {
     try {
         const tags = req.body;
@@ -29,27 +32,42 @@ const addTags = async (req, res) => {
             return res.status(400).json({ message: "Request body must be an array of tags." });
         }
 
-        // Iterate over each tag object in the array
         const createdTags = [];
+        const errors = [];
+
         for (const tagData of tags) {
             const { tagName } = tagData;
 
             // Ensure tagName is a valid string
             if (typeof tagName !== 'string' || !tagName.trim()) {
-                return res.status(400).json({ message: `Invalid tag name for one of the entries. All tag names must be non-empty strings.` });
+                errors.push(`Invalid tag name: '${tagName}'. It must be a non-empty string.`);
+                continue;
             }
 
-            // Create the tag, ignoring any 'verified' field that might be in the request
+            // Check for existing tag with the same name, case-insensitive
+            const existingTag = await Tag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+            if (existingTag) {
+                errors.push(`A tag with the name '${tagName}' already exists.`);
+                continue;
+            }
+
+            // Create the tag if it does not exist
             const tag = await Tag.create({ tagName });
-            createdTags.push(tag); // Collect created tags
+            createdTags.push(tag);
+        }
+
+        // If there are errors, include the successfully created tags and the errors
+        if (errors.length > 0) {
+            return res.status(400).json({ createdTags, errors });
         }
 
         // Respond with the created tags
-        res.status(200).json(createdTags);
+        res.status(201).json(createdTags);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 // Show all tags controller

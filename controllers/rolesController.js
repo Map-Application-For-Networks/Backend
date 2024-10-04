@@ -3,21 +3,26 @@ const Role = require('../models/role.model');
 // Add role controller
 const addRole = async (req, res) => {
     try {
-        const { roleName, verified } = req.body;
+        const { roleName } = req.body;
 
-        // Ensure roleName is a string
         if (typeof roleName !== 'string' || !roleName.trim()) {
             return res.status(400).json({ message: "Invalid role name. It must be a non-empty string." });
         }
 
-        // Create the tag without manual verified field modification
-        const role = await Role.create({ roleName });
+        // Check for existing role with the same name, case-insensitive
+        const existingRole = await Role.findOne({ roleName: { $regex: new RegExp('^' + roleName + '$', 'i') } });
+        if (existingRole) {
+            return res.status(409).json({ message: "A role with this name already exists." });
+        }
 
-        res.status(200).json(role);
+        // Create the role if it does not exist
+        const role = await Role.create({ roleName });
+        res.status(201).json(role);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 // Show all roles controller

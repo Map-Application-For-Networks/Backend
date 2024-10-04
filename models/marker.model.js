@@ -32,10 +32,12 @@ const MarkerSchema = mongoose.Schema(
         default: Date.now  
     },
 
-    researchFieldTopic: {
-      type: [String],
-      required: [true, "Please provide the research topics!"]
-    },
+
+    researchFieldTopic: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one tag is required."]
+    }],
 
     visitStatus: {
       type: String,
@@ -44,8 +46,9 @@ const MarkerSchema = mongoose.Schema(
     },
 
     role: {
-      type: String,
-      required: [true, "Please specify the role!"],
+      type: mongoose.Schema.Types.ObjectId, // Reference to Role model
+      ref: 'Role',
+      required: [true, "Please specify the role!"]
       
     },
 

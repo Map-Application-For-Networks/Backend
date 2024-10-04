@@ -4,20 +4,18 @@ const { validateMarker } = require('../middleware/validateMarker'); // Import va
 // Add marker controller
 const addMarkers = async (req, res) => {
     try {
-        // Check if req.body is an array of markers
         const markers = Array.isArray(req.body) ? req.body : [req.body];
-        
-        // Validate each marker
-        const validationErrors = markers.map(validateMarker).filter(error => error);
+        const validationResults = await Promise.all(markers.map(validateMarker));
+        const validationErrors = validationResults.filter(result => result !== null);
+
         if (validationErrors.length > 0) {
-            return res.status(400).json({ message: validationErrors });
+            return res.status(400).json({ message: "Validation errors", errors: validationErrors });
         }
 
-        // Insert markers into the database
         const createdMarkers = await Marker.insertMany(markers);
-        res.status(200).json(createdMarkers);
+        return res.status(201).json(createdMarkers);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
