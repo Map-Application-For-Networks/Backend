@@ -84,6 +84,48 @@ const getAllMarkers = async (req, res) => {
     }
 };
 
+// Delete marker controller
+const deleteMarker = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedMarker = await Marker.findByIdAndDelete(id);
+
+        if (!deletedMarker) {
+            return res.status(404).json({ message: 'Marker not found' });
+        }
+
+        res.status(200).json({ message: 'Marker deleted successfully', deletedMarker });
+    } catch (error) {
+        console.error('Error deleting marker:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Update marker verification status controller
+const updateMarkerVerification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { verified } = req.body; // 'verified' should be passed as part of the request body
+
+        // Validate that 'verified' is either 0 or 1
+        if (![1].includes(verified)) {
+            return res.status(400).json({ message: 'Invalid verified status. Must be 0 or 1.' });
+        }
+
+        const updatedMarker = await Marker.findByIdAndUpdate(id, { verified }, { new: true });
+
+        if (!updatedMarker) {
+            return res.status(404).json({ message: 'Marker not found' });
+        }
+
+        res.status(200).json(updatedMarker);
+    } catch (error) {
+        console.error('Error updating marker verification status:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
-module.exports = { addMarker, addMarkers, getVerifiedMarkers, getRefutedMarkers,  getAllMarkers};
+
+
+module.exports = { addMarker, addMarkers, getVerifiedMarkers, getRefutedMarkers,  getAllMarkers, deleteMarker, updateMarkerVerification};

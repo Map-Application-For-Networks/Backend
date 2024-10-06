@@ -1,5 +1,5 @@
 const express = require('express');
-const { addMarker, addMarkers, getVerifiedMarkers, getRefutedMarkers,  getAllMarkers} = require('../controllers/markersController'); // Import the controller
+const { addMarker, addMarkers, getVerifiedMarkers, getRefutedMarkers,  getAllMarkers, deleteMarker, updateMarkerVerification} = require('../controllers/markersController'); // Import the controller
 
 const router = express.Router();
 
@@ -13,5 +13,9 @@ router.get('/verified-markers', getVerifiedMarkers);
 router.get('/all-markers', getAllMarkers);
 
 router.get('/refuted-markers', getRefutedMarkers)
+
+router.delete('/marker/:id/delete', deleteMarker);
+
+router.patch('/marker/:id/verify', updateMarkerVerification);
 
 module.exports = router;
