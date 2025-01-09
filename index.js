@@ -4,6 +4,7 @@ const mongoose = require('./config/db'); // Import DB connection
 const markerRoutes = require('./routes/markerRoutes'); // Import routes
 const tagRoutes = require('./routes/tagRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const userRoutes = require('./routes/userRoutes')
 
 const app = express();
 const PORT = 3001;
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/api', markerRoutes);
 app.use('/api', tagRoutes);
 app.use('/api', roleRoutes);
+app.use('/api', userRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
