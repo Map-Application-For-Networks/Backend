@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const TagSchema = mongoose.Schema(
+const ExpertiseTagSchema = mongoose.Schema(
   {
     tagName: {
       type: String,
-      required: [true, "Please enter tag name!"],
+      required: [true, "Please enter expertise area tag name!"],
     },
 
     verified: {
@@ -21,5 +21,5 @@ const TagSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Tag', TagSchema);
+module.exports = mongoose.model('Expertise Tag', ExpertiseTagSchema);
 

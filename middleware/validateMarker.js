@@ -1,5 +1,5 @@
 const Role = require('../models/role.model'); // Import Role model
-const Tag = require('../models/tag.model');  // Import Tag model
+const Tag = require('../models/techTag.model');  // Import Tag model
 const validator = require('validator');
 const mongoose = require('mongoose');
 

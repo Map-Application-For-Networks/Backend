@@ -1,21 +1,21 @@
-const Tag = require('../models/tag.model');
+const TechnologyTag = require('../models/techTag.model');
 
 const addTag = async (req, res) => {
     try {
         const { tagName } = req.body;
 
         if (typeof tagName !== 'string' || !tagName.trim()) {
-            return res.status(400).json({ message: "Invalid tag name. It must be a non-empty string." });
+            return res.status(400).json({ message: "Invalid technology tag name. It must be a non-empty string." });
         }
 
         // Check for existing tag with the same name, case-insensitive
-        const existingTag = await Tag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+        const existingTag = await TechnologyTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
         if (existingTag) {
-            return res.status(409).json({ message: "A tag with this name already exists." });
+            return res.status(409).json({ message: "A technlogy tag with this name already exists." });
         }
 
         // Create the tag if it does not exist
-        const tag = await Tag.create({ tagName });
+        const tag = await TechnologyTag.create({ tagName });
         res.status(201).json(tag);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -45,14 +45,14 @@ const addTags = async (req, res) => {
             }
 
             // Check for existing tag with the same name, case-insensitive
-            const existingTag = await Tag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+            const existingTag = await TechnologyTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
             if (existingTag) {
                 errors.push(`A tag with the name '${tagName}' already exists.`);
                 continue;
             }
 
             // Create the tag if it does not exist
-            const tag = await Tag.create({ tagName });
+            const tag = await TechnologyTag.create({ tagName });
             createdTags.push(tag);
         }
 
@@ -74,11 +74,11 @@ const addTags = async (req, res) => {
 const showTags = async (req, res) => {
     try {
         // Find all tags from the database
-        const tags = await Tag.find();
+        const tags = await TechnologyTag.find();
 
         // Check if there are any tags in the collection
         if (!tags || tags.length === 0) {
-            return res.status(404).json({ message: 'No tags found' });
+            return res.status(404).json({ message: 'No technology tags found' });
         }
 
         // Return the tags found
