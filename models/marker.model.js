@@ -24,7 +24,7 @@ const MarkerSchema = mongoose.Schema(
 
     phone: {
       type: String,
-      required: [true, "Please provide the phone number!"]
+      
     },
 
     date: {
@@ -33,10 +33,20 @@ const MarkerSchema = mongoose.Schema(
     },
 
 
-    researchFieldTopic: [{
+    techTags: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tag',
-      required: [true, "At least one tag is required."]
+      required: [true, "At least one tech tag is required."]
+    }],
+    modelTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one model tag is required."]
+    }],
+    expertiseAreaTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one expertise area tag is required."]
     }],
 
     visitStatus: {
