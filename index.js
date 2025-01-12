@@ -13,7 +13,7 @@ const PORT = 3001;
 
 // Enable CORS for all requests (can restrict it to specific origins if needed)
 app.use(cors(
-    origin : ["https://backend-qvqwmfqdj-aybars-turels-projects.vercel.app"]
+    
 ));
 
 // To restrict CORS to specific origin (like your React app):
