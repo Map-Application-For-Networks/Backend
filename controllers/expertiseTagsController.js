@@ -1,4 +1,6 @@
 const expertiseTag = require('../models/expertiseTag.model');
+const Marker = require('../models/marker.model'); // Ensure correct path
+const mongoose = require('mongoose');
 
 const addTag = async (req, res) => {
     try {
@@ -90,6 +92,76 @@ const showTags = async (req, res) => {
     }
 };
 
-module.exports = { addTag, addTags, showTags };
+// Delete an expertise area tag
+const deleteTag = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid tag ID format." });
+        }
+        const objectId = new mongoose.Types.ObjectId(id);
+
+        // Find the tag before deletion
+        const tag = await expertiseTag.findById(objectId);
+        if (!tag) {
+            return res.status(404).json({ message: "Expertise area tag not found." });
+        }
+
+        // Prevent deletion of the "NULL" tag
+        if (tag.tagName.toLowerCase() === "null") {
+            return res.status(403).json({ message: "The 'NULL' tag cannot be deleted." });
+        }
+
+        // Find the "NULL" tag (ensure it exists)
+        const nullTag = await expertiseTag.findOne({ tagName: "NULL" });
+        if (!nullTag) {
+            return res.status(500).json({ message: "Critical error: 'NULL' tag is missing in the database." });
+        }
+
+        // Delete the tag
+        await expertiseTag.findByIdAndDelete(objectId);
+
+        // Find all markers that have this tag in the expertiseAreaTags array
+        const markers = await Marker.find({ expertiseAreaTags: objectId });
+
+        if (!markers || markers.length === 0) {
+            return res.status(200).json({
+                message: "Expertise area tag deleted successfully. No markers needed updates.",
+                deletedTag: tag,
+                updatedMarkers: []
+            });
+        }
+
+        // Update markers: Remove the deleted tag and assign "NULL" tag if empty
+        const updatedMarkers = await Promise.all(
+            markers.map(async (marker) => {
+                // Remove the deleted tag from expertiseAreaTags
+                marker.expertiseAreaTags = marker.expertiseAreaTags.filter(tagId => tagId.toString() !== id);
+
+                // If expertiseAreaTags is empty, assign the "NULL" tag
+                if (marker.expertiseAreaTags.length === 0) {
+                    marker.expertiseAreaTags = [nullTag._id];
+                }
+
+                await marker.save();
+                return marker;
+            })
+        );
+
+        res.status(200).json({
+            message: "Expertise area tag deleted successfully and markers updated.",
+            deletedTag: tag,
+            updatedMarkers
+        });
+
+    } catch (error) {
+        console.error("Error deleting expertise area tag:", error);
+        res.status(500).json({ message: "An error occurred while deleting the expertise area tag." });
+    }
+};
+
+module.exports = { addTag, addTags, showTags, deleteTag };
 
 
