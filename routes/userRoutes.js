@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/login", adminLogin);
 
 // Create admin user (remove after creating the admin)
-router.post("/create-admin", createAdmin);
+//router.post("/create-admin", createAdmin);
 
 router.get("/validate-token", validateToken);
 
