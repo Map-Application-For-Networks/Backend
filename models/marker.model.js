@@ -49,11 +49,6 @@ const MarkerSchema = mongoose.Schema(
       required: [true, "At least one expertise area tag is required."]
     }],
 
-    visitStatus: {
-      type: String,
-      required: [true, "Please specify the visit status!"],
-      enum: ["Open", "Closed"]
-    },
 
     role: {
       type: mongoose.Schema.Types.ObjectId, // Reference to Role model
