@@ -1,12 +1,17 @@
-const Role = require('../models/role.model'); // Import Role model
-const TechTag = require('../models/techTag.model');  // Import Tag model
-const ModelTag = require('../models/modelTag.model')
-const ExpertiseTag = require('../models/expertiseTag.model')
+const Role = require('../models/role.model');
+const OrganismTag = require('../models/organismTag.model')
+const DrivenProcessTag = require('../models/drivenProcessTag.model')
+const ClassTag = require('../models/classOfExRnaTag.model')
+const CarrierTag = require('../models/carrierOfExRnaTag.model')
+const ApplicationTag = require('../models/applicationAreaTag.model')
+const ResearchExpertiseTag = require('../models/researchExpertiseTag.model')
+const TechnicalExpertiseTag = require('../models/techExpertiseTag.model')
+
 const validator = require('validator');
 const mongoose = require('mongoose');
 
 const validateMarker = async (data) => {
-    const { geocode,techTags, modelTags, expertiseAreaTags, phone, email, date, verified, role } = data;
+    const { geocode, organismTags, drivenProcessTags, classTags, carrierTags, applicationAreaTags, researchExpertiseTags, technicalExpertiseTags, phone, email, date, verified, role } = data;
 
     if (!Array.isArray(geocode) || geocode.length !== 2 || !geocode.every(coord => typeof coord === 'number')) {
         return 'Geocode must be an array of two numbers [latitude, longitude].';
@@ -21,43 +26,100 @@ const validateMarker = async (data) => {
         return 'Phone number must start with + and only contain numbers and - sign.';
     }
 
-    if (!Array.isArray(techTags) || techTags.length === 0) {
+    if (!Array.isArray(organismTags) || organismTags.length === 0) {
         return 'Tech Tags list must be a non-empty array.';
     }
 
-    for (const tag of techTags) {
+    for (const tag of organismTags) {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
           return `Tag id "${tag}" is not a valid ObjectId.`;
       }
-      const tagExists = await TechTag.findOne({ _id: tag });
+      const tagExists = await OrganismTag.findOne({ _id: tag });
       if (!tagExists) {
           return `Tag id "${tag}" does not exist in the database.`;
       }
     }
 
-    if (!Array.isArray(modelTags) || modelTags.length === 0) {
-        return 'Model Tags list must be a non-empty array.';
+    if (!Array.isArray(drivenProcessTags) || drivenProcessTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
     }
 
-    for (const tag of modelTags) {
+     for (const tag of drivenProcessTags) {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
           return `Tag id "${tag}" is not a valid ObjectId.`;
       }
-      const tagExists = await ModelTag.findOne({ _id: tag });
+      const tagExists = await DrivenProcessTag.findOne({ _id: tag });
       if (!tagExists) {
           return `Tag id "${tag}" does not exist in the database.`;
       }
     }
 
-    if (!Array.isArray(expertiseAreaTags) || expertiseAreaTags.length === 0) {
-        return 'Expertise Area Tags list must be a non-empty array.';
+    if (!Array.isArray(classTags) || classTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
     }
 
-    for (const tag of expertiseAreaTags) {
+     for (const tag of classTags) {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
           return `Tag id "${tag}" is not a valid ObjectId.`;
       }
-      const tagExists = await ExpertiseTag.findOne({ _id: tag });
+      const tagExists = await ClassTag.findOne({ _id: tag });
+      if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+      }
+    }
+
+    if (!Array.isArray(carrierTags) || carrierTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
+    }
+
+     for (const tag of carrierTags) {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+      }
+      const tagExists = await CarrierTag.findOne({ _id: tag });
+      if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+      }
+    }
+
+    if (!Array.isArray(applicationAreaTags) || applicationAreaTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
+    }
+
+     for (const tag of applicationAreaTags) {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+      }
+      const tagExists = await ApplicationTag.findOne({ _id: tag });
+      if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+      }
+    }
+
+     if (!Array.isArray(researchExpertiseTags) || researchExpertiseTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
+    }
+
+
+     for (const tag of researchExpertiseTags) {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+      }
+      const tagExists = await ResearchExpertiseTag.findOne({ _id: tag });
+      if (!tagExists) {
+          return `Tag id "${tag}" does not exist in the database.`;
+      }
+    }
+
+    if (!Array.isArray(drivenProcessTags) || drivenProcessTags.length === 0) {
+        return 'Tech Tags list must be a non-empty array.';
+    }
+
+     for (const tag of technicalExpertiseTags) {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+          return `Tag id "${tag}" is not a valid ObjectId.`;
+      }
+      const tagExists = await TechnicalExpertiseTag.findOne({ _id: tag });
       if (!tagExists) {
           return `Tag id "${tag}" does not exist in the database.`;
       }

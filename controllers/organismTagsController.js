@@ -1,5 +1,5 @@
-const TechnologyTag = require('../models/techTag.model');
-const Marker = require('../models/marker.model')
+const organismTag = require('../models/organismTag.model');
+const Marker = require('../models/marker.model'); // Ensure correct path
 const mongoose = require('mongoose');
 
 const addTag = async (req, res) => {
@@ -7,17 +7,17 @@ const addTag = async (req, res) => {
         const { tagName } = req.body;
 
         if (typeof tagName !== 'string' || !tagName.trim()) {
-            return res.status(400).json({ message: "Invalid technology tag name. It must be a non-empty string." });
+            return res.status(400).json({ message: "Invalid organism are tag name. It must be a non-empty string." });
         }
 
         // Check for existing tag with the same name, case-insensitive
-        const existingTag = await TechnologyTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+        const existingTag = await organismTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
         if (existingTag) {
-            return res.status(409).json({ message: "A technlogy tag with this name already exists." });
+            return res.status(409).json({ message: "An organism tag with this name already exists." });
         }
 
         // Create the tag if it does not exist
-        const tag = await TechnologyTag.create({ tagName });
+        const tag = await organismTag.create({ tagName });
         res.status(201).json(tag);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -47,14 +47,14 @@ const addTags = async (req, res) => {
             }
 
             // Check for existing tag with the same name, case-insensitive
-            const existingTag = await TechnologyTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
+            const existingTag = await organismTag.findOne({ tagName: { $regex: new RegExp('^' + tagName + '$', 'i') } });
             if (existingTag) {
                 errors.push(`A tag with the name '${tagName}' already exists.`);
                 continue;
             }
 
             // Create the tag if it does not exist
-            const tag = await TechnologyTag.create({ tagName });
+            const tag = await organismTag.create({ tagName });
             createdTags.push(tag);
         }
 
@@ -76,11 +76,11 @@ const addTags = async (req, res) => {
 const showTags = async (req, res) => {
     try {
         // Find all tags from the database
-        const tags = await TechnologyTag.find();
+        const tags = await organismTag.find();
 
         // Check if there are any tags in the collection
         if (!tags || tags.length === 0) {
-            return res.status(404).json({ message: 'No technology tags found' });
+            return res.status(404).json({ message: 'No organism tags found' });
         }
 
         // Return the tags found
@@ -92,8 +92,7 @@ const showTags = async (req, res) => {
     }
 };
 
-
-
+// Delete an organism area tag
 const deleteTag = async (req, res) => {
     try {
         const { id } = req.params;
@@ -105,9 +104,9 @@ const deleteTag = async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(id);
 
         // Find the tag before deletion
-        const tag = await TechnologyTag.findById(objectId);
+        const tag = await organismTag.findById(objectId);
         if (!tag) {
-            return res.status(404).json({ message: "Technology tag not found." });
+            return res.status(404).json({ message: "Organism tag not found." });
         }
 
         // Prevent deletion of the "NULL" tag
@@ -116,20 +115,20 @@ const deleteTag = async (req, res) => {
         }
 
         // Find the "NULL" tag (ensure it exists)
-        const nullTag = await TechnologyTag.findOne({ tagName: "NULL" });
+        const nullTag = await organismTag.findOne({ tagName: "NULL" });
         if (!nullTag) {
             return res.status(500).json({ message: "Critical error: 'NULL' tag is missing in the database." });
         }
 
         // Delete the tag
-        await TechnologyTag.findByIdAndDelete(objectId);
+        await organismTag.findByIdAndDelete(objectId);
 
-        // Find all markers that have this tag in the techTags array
-        const markers = await Marker.find({ techTags: objectId });
+        // Find all markers that have this tag in the organismTag array
+        const markers = await Marker.find({ organismTag: objectId });
 
         if (!markers || markers.length === 0) {
             return res.status(200).json({
-                message: "Technology tag deleted successfully. No markers needed updates.",
+                message: "Organism tag deleted successfully. No markers needed updates.",
                 deletedTag: tag,
                 updatedMarkers: []
             });
@@ -138,12 +137,12 @@ const deleteTag = async (req, res) => {
         // Update markers: Remove the deleted tag and assign "NULL" tag if empty
         const updatedMarkers = await Promise.all(
             markers.map(async (marker) => {
-                // Remove the deleted tag from techTags
-                marker.techTags = marker.techTags.filter(tagId => tagId.toString() !== id);
+                // Remove the deleted tag from organismTag
+                marker.organismTag = marker.organismTag.filter(tagId => tagId.toString() !== id);
 
-                // If techTags is empty, assign the "NULL" tag
-                if (marker.techTags.length === 0) {
-                    marker.techTags = [nullTag._id];
+                // If organismTag is empty, assign the "NULL" tag
+                if (marker.organismTag.length === 0) {
+                    marker.organismTag = [nullTag._id];
                 }
 
                 await marker.save();
@@ -152,17 +151,16 @@ const deleteTag = async (req, res) => {
         );
 
         res.status(200).json({
-            message: "Technology tag deleted successfully and markers updated.",
+            message: "Organism tag deleted successfully and markers updated.",
             deletedTag: tag,
             updatedMarkers
         });
 
     } catch (error) {
-        console.error("Error deleting tag:", error);
-        res.status(500).json({ message: "An error occurred while deleting the tag." });
+        console.error("Error deleting organism tag:", error);
+        res.status(500).json({ message: "An error occurred while deleting the organism tag." });
     }
 };
-
 
 module.exports = { addTag, addTags, showTags, deleteTag };
 

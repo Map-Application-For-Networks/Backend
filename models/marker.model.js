@@ -32,18 +32,40 @@ const MarkerSchema = mongoose.Schema(
         default: Date.now  
     },
 
+    organismTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one organism tag is required."]
+    }],
 
-    techTags: [{
+    drivenProcessTags: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tag',
-      required: [true, "At least one tech tag is required."]
+      required: [true, "At least one exRNA-driven process tag is required."]
     }],
-    modelTags: [{
+
+    classTags: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tag',
-      required: [true, "At least one model tag is required."]
+      required: [true, "At least one class of exRNA tag is required."]
     }],
-    expertiseAreaTags: [{
+    carrierTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one carrier of exRNA area tag is required."]
+    }],
+
+    applicationAreaTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one application ares tag is required."]
+    }],
+    researchExpertiseTags: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag',
+      required: [true, "At least one research expertise tag is required."]
+    }],
+    technicalExpertiseTags: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tag',
       required: [true, "At least one expertise area tag is required."]

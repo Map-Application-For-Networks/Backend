@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const TechnologyTagSchema = mongoose.Schema(
+const applicationAreaTagSchema = mongoose.Schema(
   {
     tagName: {
       type: String,
-      required: [true, "Please enter technology tag name!"],
+      required: [true, "Please enter application area tag name!"],
     },
 
     verified: {
@@ -21,5 +21,5 @@ const TechnologyTagSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Technology Tag', TechnologyTagSchema);
+module.exports = mongoose.model('Application Area Tag', applicationAreaTagSchema);
 
