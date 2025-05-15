@@ -10,6 +10,30 @@ const TechnicalExpertiseTag = require('../models/techExpertiseTag.model')
 const validator = require('validator');
 const mongoose = require('mongoose');
 
+const validateTagArray = async (tags, model, label) => {
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return `${label} list must be a non-empty array.`;
+  }
+
+  for (const tag of tags) {
+    if (!mongoose.Types.ObjectId.isValid(tag)) {
+      return `Tag ID "${tag}" in ${label} is not a valid ObjectId.`;
+    }
+
+    const tagDoc = await model.findById(tag);
+    if (!tagDoc) {
+      return `Tag ID "${tag}" does not exist in ${label}.`;
+    }
+
+    if (tagDoc.tagName.trim().toUpperCase() === 'NULL') {
+      return `You cannot use the placeholder tag 'NULL' in ${label}.`;
+    }
+  }
+
+  return null;
+};
+
+
 const validateMarker = async (data) => {
     const { geocode, organismTags, drivenProcessTags, classTags, carrierTags, applicationAreaTags, researchExpertiseTags, technicalExpertiseTags, phone, email, date, verified, role } = data;
 
@@ -30,100 +54,28 @@ const validateMarker = async (data) => {
         return 'Tech Tags list must be a non-empty array.';
     }
 
-    for (const tag of organismTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await OrganismTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
+      let error;
 
-    if (!Array.isArray(drivenProcessTags) || drivenProcessTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
+  error = await validateTagArray(organismTags, OrganismTag, 'Organism Tags');
+  if (error) return error;
 
-     for (const tag of drivenProcessTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await DrivenProcessTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
+  error = await validateTagArray(drivenProcessTags, DrivenProcessTag, 'Driven Process Tags');
+  if (error) return error;
 
-    if (!Array.isArray(classTags) || classTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
+  error = await validateTagArray(classTags, ClassTag, 'Class of exRNA Tags');
+  if (error) return error;
 
-     for (const tag of classTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await ClassTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
+  error = await validateTagArray(carrierTags, CarrierTag, 'Carrier of exRNA Tags');
+  if (error) return error;
 
-    if (!Array.isArray(carrierTags) || carrierTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
+  error = await validateTagArray(applicationAreaTags, ApplicationTag, 'Application Area Tags');
+  if (error) return error;
 
-     for (const tag of carrierTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await CarrierTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
+  error = await validateTagArray(researchExpertiseTags, ResearchExpertiseTag, 'Research Expertise Tags');
+  if (error) return error;
 
-    if (!Array.isArray(applicationAreaTags) || applicationAreaTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
-
-     for (const tag of applicationAreaTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await ApplicationTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
-
-     if (!Array.isArray(researchExpertiseTags) || researchExpertiseTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
-
-
-     for (const tag of researchExpertiseTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await ResearchExpertiseTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
-
-    if (!Array.isArray(drivenProcessTags) || drivenProcessTags.length === 0) {
-        return 'Tech Tags list must be a non-empty array.';
-    }
-
-     for (const tag of technicalExpertiseTags) {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-          return `Tag id "${tag}" is not a valid ObjectId.`;
-      }
-      const tagExists = await TechnicalExpertiseTag.findOne({ _id: tag });
-      if (!tagExists) {
-          return `Tag id "${tag}" does not exist in the database.`;
-      }
-    }
+  error = await validateTagArray(technicalExpertiseTags, TechnicalExpertiseTag, 'Technical Expertise Tags');
+  if (error) return error;
 
     if (date) {
         return "You cannot manually set the date. It will be set automatically.";
