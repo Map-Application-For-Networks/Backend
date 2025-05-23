@@ -22,9 +22,9 @@ const MarkerSchema = mongoose.Schema(
       required: [true, "Please provide the email address!"]
     },
 
-    phone: {
+    name_and_surname: {
       type: String,
-      
+      required: [true, "Please provide the name and surname!"]
     },
 
     date: {
